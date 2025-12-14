@@ -6,7 +6,7 @@ pipeline {
     }
        
     stages {
-        stage('Create  directory for the WEB Application')
+        stage('Create directory for the WEB Application')
         {
             when { 
                 equals(actual: currentBuild.number, expected: 1)
@@ -37,8 +37,7 @@ pipeline {
                 }
              }
             steps {
-            echo 'Creating the container...'
-            sh 'docker run -dit --name app-web -p 9100:80  -v /home/jenkins/app-web:/usr/local/apache2/htdocs/ httpd'
+            echo 'Creating the apache container in Dev env...'
             }
         }
         //Nginx webserver in Test
@@ -50,9 +49,7 @@ pipeline {
             }
              }
             steps {
-            echo 'Creating the container...'
-            sh 'docker run -dit --name app-web -p 9100:80  -v /home/jenkins/app-web:/usr/share/nginx/html nginx'
-         
+            echo 'Creating the nginx container in test env...'
             }
         }
         //Nginx Webserver in Production
@@ -64,9 +61,7 @@ pipeline {
             }
              }
             steps {
-            echo 'Creating the container...'
-            sh 'docker run -dit --name app-web -p 9100:80  -v /home/jenkins/app-web:/usr/share/nginx/html nginx'
-         
+            echo 'Creating the nginx container in production env...'
             }
         }
         //Error is Webserver is Nginx and Env is Development
@@ -80,7 +75,6 @@ pipeline {
 
             steps {
             echo 'Nginx cannot be deployed in Development...'
-         
             }
         }
 
@@ -98,15 +92,13 @@ pipeline {
 
             steps {
             echo 'Apache cannot be deployed in Test or Production environments...'
-         
             }
         }
 
         //Copy the application   
         stage('Copy the web application to the container directory') {
             steps {
-                echo 'Copying web application...'             
-                sh 'cp -r web/* /home/jenkins/app-web'
+                echo 'Copying web application...'
             }
         }
     }
@@ -119,9 +111,6 @@ pipeline {
         success {
         // One or more steps need to be included within each condition's block.
           echo 'the deployment has worked'
-          archiveArtifacts allowEmptyArchive: true, artifacts: 'web/*', followSymlinks: false
-          cleanWs()         
-
        }
        failure {
         // One or more steps need to be included within each condition's block.
