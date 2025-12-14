@@ -6,7 +6,7 @@ pipeline {
     }
        
     stages {
-        stage(operation working on first build only')
+        stage('operation working on first build only')
         {
             when { 
                 equals(actual: currentBuild.number, expected: 1)
